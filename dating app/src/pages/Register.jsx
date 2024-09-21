@@ -91,9 +91,7 @@ const Register = () => {
             'Register'
           )}
         </button>
-      </form>
-
-      {/* Error Message */}
+        {/* Error Message */}
       {errorMessage && (
         <div className="w-full max-w-md mt-4">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -102,6 +100,7 @@ const Register = () => {
           </div>
         </div>
       )}
+      </form>
     </div>
   );
 };
