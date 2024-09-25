@@ -9,6 +9,10 @@ import Register from './pages/Register';
 import Header from './components/Header';
 import Home from './pages/Home.jsx';
 import FooterCom from './components/Footer.jsx';
+import Hobbies from './pages/Hobbies.jsx';
+import AdditionalDetails from './pages/AdditionalDetails.jsx';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 function App() {
   return (
     <div>
@@ -23,6 +27,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/navbar" element={<Navbar />} />
           <Route path="/home" element={<Home/>} />
+          <Route path="/hobbies" element={<Hobbies/>} />
+          <Route path="/additionaldetails" element={<AdditionalDetails/>} />
 
         </Routes>
       </div>
