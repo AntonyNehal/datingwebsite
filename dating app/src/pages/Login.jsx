@@ -1,75 +1,17 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-
-// const Login = () => {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const navigate = useNavigate();
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const res = await axios.post('/api/login', { email, password });
-//       localStorage.setItem('authToken', res.data.token);
-//       navigate('/matches');
-//     } catch (err) {
-//       console.error('Error logging in', err);
-//     }
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center h-screen bg-gray-100">
-//       <form
-//         onSubmit={handleLogin}
-//         className="bg-white p-8 rounded shadow-md w-full max-w-md"
-//       >
-//         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-//         <div className="mb-4">
-//           <input
-//             type="email"
-//             placeholder="Email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-//             required
-//           />
-//         </div>
-//         <div className="mb-6">
-//           <input
-//             type="password"
-//             placeholder="Password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-//             required
-//           />
-//         </div>
-//         <div className="flex items-center justify-between">
-//           <button
-//             type="submit"
-//             className="w-full bg-indigo-500 text-white p-2 rounded hover:bg-indigo-600 transition-colors rounded focus:outline-none focus:shadow-outline"
-//           >
-//             Login
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default Login;
 import React, { useState } from 'react';
 import { MDBIcon, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
 import { useNavigate ,Link} from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useDispatch,useSelector } from 'react-redux';
+import {signInStart,signInSuccess,signInFailure} from '../redux/user/userSlice.js';
 
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: '', password: '' });
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
-
+  // const [errorMessage, setErrorMessage] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const{loading,error:errorMessage}=useSelector(state=>state.user);
+  const dispatch = useDispatch()
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
@@ -77,13 +19,14 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!formData.username || !formData.password) {
-      return setErrorMessage('Please fill out all fields');
+      return dispatch(signInFailure('Please fill out all fields'));
     }
 
-    setLoading(true);
-    setErrorMessage(null);
+    // setLoading(true);
+    // setErrorMessage(null);
 
     try {
+      dispatch(signInStart());
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,19 +35,21 @@ export default function Login() {
 
       const data = await res.json();
       if (!res.ok || data.success === false) {
-        setLoading(false);
-        return setErrorMessage(data.message || 'Login failed');
+        // setLoading(false);
+        dispatch(signInFailure(data.message));
       }
 
-      setLoading(false);
+      // setLoading(false);
       console.log('Login successful:', data);
       if(res.ok){
+        dispatch(signInSuccess(data));
         navigate('/home');
         }
  
     } catch (err) {
-      setErrorMessage('Something went wrong, please try again.');
-      setLoading(false);
+      // setErrorMessage('Something went wrong, please try again.');
+      // setLoading(false);
+      dispatch(signInFailure(error.message));
       console.error('Error login:', err);
     }
   };

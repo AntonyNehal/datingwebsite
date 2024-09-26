@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './background.css';
+import { useDispatch,useSelector } from 'react-redux';
+import {signInStart,signInSuccess,signInFailure} from '../redux/user/userSlice.js';
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -8,8 +10,9 @@ const Register = () => {
     email: '',
     password: '',
   });
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const{loading,error:errorMessage}=useSelector(state=>state.user);
+  const dispatch = useDispatch()
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -18,13 +21,11 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage('Please fill out all fields');
+      return dispatch(signInFailure('Please fill out all fields'));
     }
 
-    setLoading(true);
-    setErrorMessage(null); // Reset error message
-
     try {
+        dispatch(signInStart());
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -33,18 +34,15 @@ const Register = () => {
 
       const data = await res.json();
       if (!res.ok || data.success === false) {
-        setLoading(false);
-        return setErrorMessage(data.message || 'Registration failed');
+        dispatch(signInFailure(data.message));
       }
-
-      setLoading(false);
       console.log('Registration successful:', data);
       if(res.ok){
+      dispatch(signInSuccess(data));
       navigate('/');
       }
     } catch (err) {
-      setErrorMessage('Something went wrong, please try again.');
-      setLoading(false);
+      dispatch(signInFailure(error.message));
       console.error('Error registering:', err);
     }
   };
