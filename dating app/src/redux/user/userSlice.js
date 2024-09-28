@@ -20,7 +20,10 @@ const userSlice=createSlice({
         signInFailure:(state,action)=>{
             state.loading=false;
             state.error=action.payload;
-        }
+        },
+        clearUser: (state) => {
+            state.user = null; // Optional: to clear user data
+          }
     }
 })
 export const {signInStart,signInSuccess,signInFailure}=userSlice.actions;

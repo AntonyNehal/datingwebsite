@@ -12,6 +12,7 @@ import FooterCom from './components/Footer.jsx';
 import Hobbies from './pages/Hobbies.jsx';
 import AdditionalDetails from './pages/AdditionalDetails.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'flowbite/dist/flowbite.css';
 
 function App() {
   return (

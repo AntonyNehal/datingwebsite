@@ -4,6 +4,7 @@ import { useNavigate ,Link} from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useDispatch,useSelector } from 'react-redux';
 import {signInStart,signInSuccess,signInFailure} from '../redux/user/userSlice.js';
+import OAuth from '../components/OAuth.jsx';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -121,6 +122,7 @@ export default function Login() {
                 'Login'
               )}
             </button>
+            <OAuth/>1
             <p className="text-sm mt-2">
               Don't have an account? 
               <Link to="/register" className="text-red-500 hover:underline"> Register</Link>
@@ -140,4 +142,3 @@ export default function Login() {
     </div>
   );
 }
-

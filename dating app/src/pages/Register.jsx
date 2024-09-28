@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './background.css';
 import { useDispatch,useSelector } from 'react-redux';
 import {signInStart,signInSuccess,signInFailure} from '../redux/user/userSlice.js';
+import OAuth from '../components/OAuth.jsx';
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -94,6 +95,7 @@ const Register = () => {
           'Register'
         )}
       </button>
+      <OAuth/>
       {/* Error Message */}
       {errorMessage && (
         <div className="w-full max-w-lg mt-4">
