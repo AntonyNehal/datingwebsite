@@ -122,7 +122,7 @@ export default function Login() {
                 'Login'
               )}
             </button>
-            <OAuth/>1
+            <OAuth/>
             <p className="text-sm mt-2">
               Don't have an account? 
               <Link to="/register" className="text-red-500 hover:underline"> Register</Link>

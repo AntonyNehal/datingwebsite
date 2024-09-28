@@ -1,8 +1,8 @@
 import User from "../models/user.model.js";
 import bcryptjs from 'bcryptjs';
-import { errorHandler } from "../utils/error.js";
+import { errorHandler } from "../utils/error.js";;
 import jwt from "jsonwebtoken";
-
+import {getGravatarUrl} from "../utils/gravatar.js";
 //register
 export const register = async (req, res, next) => {
   const { username, password, email } = req.body;
@@ -34,33 +34,36 @@ export const register = async (req, res, next) => {
 };
 
 //login
-export const login=async(req,res,next)=>{
-  const {username,password}=req.body;
-  if(!username||!password||username===''||password==='')
-  {
-    next(errorHandler(400,'All fields are required'));
+// 
+export const login = async (req, res, next) => {
+  const { username, password } = req.body;
+  if (!username || !password || username === '' || password === '') {
+    next(errorHandler(400, 'All fields are required'));
   }
-  try{
-    const validUser=await User.findOne({username});
-    if(!validUser){
-      return next(errorHandler(404,'User not found'));
+  try {
+    const validUser = await User.findOne({ username });
+    if (!validUser) {
+      return next(errorHandler(404, 'User not found'));
     }
-    const validPassword=bcryptjs.compareSync(password,validUser.password);
-    if(!validPassword){
-      return next(errorHandler(400,'Invalid username or password'));
+    const validPassword = bcryptjs.compareSync(password, validUser.password);
+    if (!validPassword) {
+      return next(errorHandler(400, 'Invalid username or password'));
     }
-    const token=jwt.sign(
-      {id:validUser._id},'secretkey');
+    const profilePicture = validUser.profilePicture || getGravatarUrl(validUser.email)
+    const token = jwt.sign(
+      { id: validUser._id }, 'secretkey'
+    );
 
-      const {password:pass,...rest}=validUser._doc
+    const { password: pass, ...rest } = validUser._doc;
 
-      res.status(200).cookie('access_token',token,{
-        httpOnly:true,}).json(rest);
-  }
-  catch(err){
+    res.status(200).cookie('access_token', token, {
+      httpOnly: true,
+    }).json({ ...rest, profilePicture }); // Return profile picture
+  } catch (err) {
     next(err);
   }
-}
+};
+
 //google auth
 export const google = async (req, res, next) => {
   const { email, name, googlePhotoUrl } = req.body;

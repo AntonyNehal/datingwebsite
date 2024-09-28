@@ -11,6 +11,7 @@ import Home from './pages/Home.jsx';
 import FooterCom from './components/Footer.jsx';
 import Hobbies from './pages/Hobbies.jsx';
 import AdditionalDetails from './pages/AdditionalDetails.jsx';
+import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'flowbite/dist/flowbite.css';
 
