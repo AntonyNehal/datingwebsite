@@ -2,7 +2,6 @@ import User from "../models/user.model.js";
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from "../utils/error.js";;
 import jwt from "jsonwebtoken";
-import {getGravatarUrl} from "../utils/gravatar.js";
 //register
 export const register = async (req, res, next) => {
   const { username, password, email } = req.body;
@@ -49,9 +48,9 @@ export const login = async (req, res, next) => {
     if (!validPassword) {
       return next(errorHandler(400, 'Invalid username or password'));
     }
-    const profilePicture = validUser.profilePicture || getGravatarUrl(validUser.email)
+    const profilePicture = validUser.profilePicture;
     const token = jwt.sign(
-      { id: validUser._id }, 'secretkey'
+      { id: validUser._id }, validUser.email,'secretkey'
     );
 
     const { password: pass, ...rest } = validUser._doc;
@@ -65,6 +64,7 @@ export const login = async (req, res, next) => {
 };
 
 //google auth
+// Google Auth
 export const google = async (req, res, next) => {
   const { email, name, googlePhotoUrl } = req.body;
   try {
@@ -72,9 +72,10 @@ export const google = async (req, res, next) => {
     if (user) {
       const token = jwt.sign({ id: user._id }, 'secretkey');
       const { password, ...rest } = user._doc;
+      // Return response for existing user
       res.status(200).cookie('access_token', token, {
         httpOnly: true,
-      }).json(rest);
+      }).json({ isNewUser: false, ...rest }); // Indicate existing user
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
@@ -87,12 +88,36 @@ export const google = async (req, res, next) => {
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, 'secretkey');
       const { password, ...rest } = newUser._doc;
+      // Return response for new user
       res.status(200).cookie('access_token', token, {
         httpOnly: true,
-      }).json(rest);
+      }).json({ isNewUser: true, ...rest }); // Indicate new user
     }
   } catch (error) {
-    console.error('Error in Google Auth:', error); 
+    console.error('Error in Google Auth:', error);
     next(error);
+  }
+};
+
+//additionaldetails
+// Additional Details
+export const additionalDetails = async (req, res) => {
+  try {
+    const { email, firstName, birthday, gender, height, interests } = req.body;
+
+    // Find and update the user by email
+    const user = await User.findOneAndUpdate(
+      { email },
+      { firstName, birthday, gender, height, interests },
+      { new: true } // Return the updated user
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user); // Return the updated user details
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
   }
 };

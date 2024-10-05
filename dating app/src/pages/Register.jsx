@@ -40,7 +40,7 @@ const Register = () => {
       console.log('Registration successful:', data);
       if(res.ok){
       dispatch(signInSuccess(data));
-      navigate('/');
+      navigate('/additionaldetails');
       }
     } catch (err) {
       dispatch(signInFailure(error.message));

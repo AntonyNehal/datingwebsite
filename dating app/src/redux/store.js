@@ -2,13 +2,13 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import themeReducer from './theme/themeSlice';
 import userReducer from './user/userSlice';
-import genderReducer from './user/genderSlice';
 import storage from 'redux-persist/lib/storage';
+import additionalDetailsReducer from './user/additionaldetailsSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
-  gender: genderReducer,
   theme: themeReducer,
+  additionalDetails:additionalDetailsReducer,
 });
 
 const persistConfig = {

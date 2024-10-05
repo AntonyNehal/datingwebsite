@@ -4,11 +4,13 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice.js';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 export default function OAuth() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
 
   const handleGoogleClick = async () => {
     const auth = getAuth(app);
@@ -26,12 +28,29 @@ export default function OAuth() {
           googlePhotoUrl: resultsFromGoogle.user.photoURL,
         }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        dispatch(signInSuccess(data));
-        navigate('/home');
+      // if (res.ok) 
+      //   {
+      //   dispatch(signInSuccess(data));
+      //   {currentUser? ( navigate('/home')):( navigate('/additionaldetails'))}
+         
+      // }
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
       }
-    } catch (error) {
+
+      const data = await res.json(); // Read the response body
+      dispatch(signInSuccess(data)); // Dispatch user data
+
+      // Navigate based on whether the user is new or returning
+      if (data.isNewUser) {
+        console.log("Navigating to additional details");
+        navigate('/additionaldetails'); // New user should go here
+      } else {
+        console.log("Navigating to home");
+        navigate('/home'); // Returning user goes here
+      }
+    } 
+   catch (error) {
       console.error('Error during Google Sign-In:', error);
     }
   };
