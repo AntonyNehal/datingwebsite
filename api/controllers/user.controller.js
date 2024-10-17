@@ -94,19 +94,47 @@ export const updateUser = async (req, res, next) => {
 //       return res.status(500).json({ message: 'Internal server error', error });
 //   }
 // };
+// user.controller.js
+// user.controller.js
 
+// Rename this function
 export const updateAdditionalDetails = async (req, res) => {
-  const { image, preference } = req.body;
-  const userId = req.params.id;
+  const userId = req.params.id; // Get user ID from URL parameters
+  const { image, preference } = req.body; // Extract image and preference from the request body
+
+  console.log('Received data:', { image, preference }); // Log received data
 
   try {
-      const updatedUser = await User.findByIdAndUpdate(userId, { image, preference }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { image, preference }, // Update the image and preference fields
+          { new: true, runValidators: true } // Return the updated document and run validation
+      );
+
       if (!updatedUser) {
           return res.status(404).json({ message: 'User not found' });
       }
-      res.status(200).json(updatedUser);
+
+      res.json(updatedUser); // Return the updated user data
   } catch (error) {
-      console.error('Error updating user:', error);
-      res.status(500).json({ message: 'Server error', error: error.message });
+      console.error('Error updating user:', error); // Log the error for debugging
+      res.status(500).json({ message: 'Server error', error: error.message }); // Return a server error message
+  }
+};
+
+
+
+export const getUserByEmail = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+      const user = await User.findOne({ email }); // Find user by email
+      if (!user) {
+          return res.status(404).send('User not found'); // Handle not found
+      }
+      res.json(user); // Return the user data
+  } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).send('Server error'); // Handle server error
   }
 };

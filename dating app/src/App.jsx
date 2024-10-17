@@ -16,7 +16,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'flowbite/dist/flowbite.css';
 import Dashboard from './pages/Dashboard.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
-import AdditionalDetails2 from './pages/AdditionalDetails2.jsx';
 
 function App() {
   return (
@@ -38,7 +37,6 @@ function App() {
           </Route>
           
           <Route path="/additionaldetails" element={<AdditionalDetails/>} />
-          <Route path="/additionaldetails2" element={<AdditionalDetails2/>} />
 
         </Routes>
       </div>

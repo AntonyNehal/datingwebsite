@@ -128,13 +128,35 @@ export const additionalDetailsByEmail = async (req, res) => {
 };
 
 // Update user details
+// export const additionalDetails = async (req, res) => {
+//   try {
+//     const { email, firstName, birthday, gender, height, interests } = req.body;
+
+//     const updatedUser = await User.findOneAndUpdate(
+//       { email }, // Find user by email
+//       { firstName, birthday, gender, height, interests }, // Update user details
+//       { new: true } // Return the updated document
+//     );
+
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     res.status(200).json(updatedUser); // Return updated user details
+//   } catch (error) {
+//     console.error('Error updating user:', error);
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// };
+
+// Update user details
 export const additionalDetails = async (req, res) => {
   try {
-    const { email, firstName, birthday, gender, height, interests } = req.body;
+    const { email, firstName, birthday, gender, height, interests, image, preference } = req.body;
 
     const updatedUser = await User.findOneAndUpdate(
       { email }, // Find user by email
-      { firstName, birthday, gender, height, interests }, // Update user details
+      { firstName, birthday, gender, height, interests, image, preference }, // Update user details
       { new: true } // Return the updated document
     );
 

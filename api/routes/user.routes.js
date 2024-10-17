@@ -1,5 +1,5 @@
 import express from 'express';
-import { test, updateAdditionalDetails, updateUser,} from '../controllers/user.controller.js';
+import { getUserByEmail, test, updateAdditionalDetails, updateUser,} from '../controllers/user.controller.js';
 // import { verifyToken } from '../utils/verifyUser.js';
 const router=express.Router();
 
@@ -7,5 +7,8 @@ const router=express.Router();
 // router.post('/update/:userId',verifyToken,updateUser);
 router.get('/test',test)
 router.post('/update/:userId', updateUser); 
-router.post('/update/:id', updateAdditionalDetails);
+router.get('/:email', getUserByEmail);
+
+// Route to update user details
+router.post('/update/:id',updateAdditionalDetails);
 export default router; 
