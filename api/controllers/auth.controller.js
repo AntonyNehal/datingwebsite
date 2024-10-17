@@ -36,30 +36,42 @@ export const register = async (req, res, next) => {
 // 
 export const login = async (req, res, next) => {
   const { username, password } = req.body;
+  
+  // Check if both fields are provided
   if (!username || !password || username === '' || password === '') {
-    next(errorHandler(400, 'All fields are required'));
+    return next(errorHandler(400, 'All fields are required')); // Return here to prevent further execution
   }
+
   try {
+    // Find user by username
     const validUser = await User.findOne({ username });
     if (!validUser) {
-      return next(errorHandler(404, 'User not found'));
+      return next(errorHandler(404, 'User not found')); // Return here as well
     }
+
+    // Compare password
     const validPassword = bcryptjs.compareSync(password, validUser.password);
     if (!validPassword) {
-      return next(errorHandler(400, 'Invalid username or password'));
+      return next(errorHandler(400, 'Invalid username or password')); // Return on error
     }
+
     const profilePicture = validUser.profilePicture;
+
+    // Sign the JWT with user ID and any additional information you want
     const token = jwt.sign(
-      { id: validUser._id }, validUser.email,'secretkey'
+      { id: validUser._id, email: validUser.email }, // Include email in the payload
+      'secretkey', // Your secret key
+      { expiresIn: '1h' } // Optional: Set token expiration
     );
 
     const { password: pass, ...rest } = validUser._doc;
 
-    res.status(200).cookie('access_token', token, {
-      httpOnly: true,
-    }).json({ ...rest, profilePicture }); // Return profile picture
+    // Send response
+    res.status(200)
+      .cookie('access_token', token, { httpOnly: true }) // Set cookie with the token
+      .json({ ...rest, profilePicture }); // Return user data and profile picture
   } catch (err) {
-    next(err);
+    next(err); // Pass the error to the error handling middleware
   }
 };
 
@@ -98,26 +110,41 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
-
 //additionaldetails
-// Additional Details
-export const additionalDetails = async (req, res) => {
+export const additionalDetailsByEmail = async (req, res) => {
   try {
-    const { email, firstName, birthday, gender, height, interests } = req.body;
-
-    // Find and update the user by email
-    const user = await User.findOneAndUpdate(
-      { email },
-      { firstName, birthday, gender, height, interests },
-      { new: true } // Return the updated user
-    );
+    const { email } = req.params; // Extract email from route params
+    const user = await User.findOne({ email }); // Find user by email
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.status(200).json(user); // Return the updated user details
+    res.status(200).json(user); // Return user data
   } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// Update user details
+export const additionalDetails = async (req, res) => {
+  try {
+    const { email, firstName, birthday, gender, height, interests } = req.body;
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email }, // Find user by email
+      { firstName, birthday, gender, height, interests }, // Update user details
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(updatedUser); // Return updated user details
+  } catch (error) {
+    console.error('Error updating user:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

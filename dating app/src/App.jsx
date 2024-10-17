@@ -14,6 +14,9 @@ import AdditionalDetails from './pages/AdditionalDetails.jsx';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'flowbite/dist/flowbite.css';
+import Dashboard from './pages/Dashboard.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
+import AdditionalDetails2 from './pages/AdditionalDetails2.jsx';
 
 function App() {
   return (
@@ -30,7 +33,12 @@ function App() {
           <Route path="/navbar" element={<Navbar />} />
           <Route path="/home" element={<Home/>} />
           <Route path="/hobbies" element={<Hobbies/>} />
+          <Route element={<PrivateRoute/>}>
+          <Route path="/dashboard" element={<Dashboard/>} />
+          </Route>
+          
           <Route path="/additionaldetails" element={<AdditionalDetails/>} />
+          <Route path="/additionaldetails2" element={<AdditionalDetails2/>} />
 
         </Routes>
       </div>

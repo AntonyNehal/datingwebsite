@@ -1,10 +1,14 @@
 // utils/error.js
-export const errorHandler = (statusCode, message) => {
-    const error = new Error(message); // Pass the message to the Error constructor
-    error.statusCode = statusCode;
+// export const errorHandler = (statusCode, message) => {
+//     const error = new Error(message); // Pass the message to the Error constructor
+//     error.statusCode = statusCode;
+//     return error;
+// };
+export const errorHandler = (status, message) => {
+    const error = new Error(message);
+    error.status = status;
     return error;
-};
-
+  };
 // Express error handling middleware
 export const handleError = (err, req, res, next) => {
     const statusCode = err.statusCode || 500; // Default to 500 if statusCode is not set

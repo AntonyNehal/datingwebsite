@@ -47,38 +47,38 @@ const Register = () => {
       console.error('Error registering:', err);
     }
   };
-
   return (
     <div className="flex justify-center items-center h-screen relative">
     <div className="animated-background absolute inset-0"></div> {/* Animated Background */}
     <form onSubmit={handleRegister} className="relative z-10 bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg transform transition-transform hover:scale-105 duration-300">
       <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-700 animate-bounce">Register</h2>
       <div className="space-y-4">
-        <input
-          type="text"
-          id="username"
-          placeholder="Name"
-          value={formData.username}
-          onChange={handleChange}
-          className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300"
-        />
-        <input
-          type="email"
-          id="email"
-          placeholder="name@gmail.com"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300"
-        />
-        <input
-          type="password"
-          id="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300"
-        />
-      </div>
+      <input
+  type="text"
+  id="username"
+  placeholder="Name"
+  value={formData.username}
+  onChange={handleChange}
+  className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300 bg-white text-black dark:bg-gray-800 dark:text-white"
+/>
+<input
+  type="email"
+  id="email"
+  placeholder="name@gmail.com"
+  value={formData.email}
+  onChange={handleChange}
+  className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300 bg-white text-black dark:bg-gray-800 dark:text-white"
+/>
+<input
+  type="password"
+  id="password"
+  placeholder="Password"
+  value={formData.password}
+  onChange={handleChange}
+  className="w-full p-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all duration-300 bg-white text-black dark:bg-gray-800 dark:text-white"
+/>
+</div>
+
       <button 
         type="submit"
         className={`w-full bg-indigo-600 text-white p-3 mt-6 rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg transform hover:scale-105 ${
@@ -95,7 +95,9 @@ const Register = () => {
           'Register'
         )}
       </button>
+      <div className="grid place-items-center mt-4">
       <OAuth/>
+      </div>
       {/* Error Message */}
       {errorMessage && (
         <div className="w-full max-w-lg mt-4">

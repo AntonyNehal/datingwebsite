@@ -4,7 +4,8 @@ import { updateDetails, resetDetails } from '../redux/user/additionaldetailsSlic
 import { useNavigate } from 'react-router-dom';
 
 const interestsList = [
-  'Horror', 'Vegetarian', 'City breaks', 'Cats', 'Art', 'Skiing', 'Music', 'Traveling', 'Gaming', 'Cooking'
+  'Horror', 'Vegetarian', 'City breaks', 'Cats', 'Art', 
+  'Skiing', 'Music', 'Traveling', 'Gaming', 'Cooking'
 ];
 
 const AdditionalDetails = () => {
@@ -19,18 +20,23 @@ const AdditionalDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.currentUser);
-  const isSubmitted = useSelector((state) => state.additionalDetails.submitted); // Get the submitted flag from Redux
+  const isSubmitted = useSelector((state) => state.additionalDetails.submitted);
 
   useEffect(() => {
     const fetchAdditionalDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/auth/additionaldetails/${currentUser.email}`);
+        const encodedEmail = encodeURIComponent(currentUser.email);
+        const response = await fetch(`http://localhost:3000/api/auth/additionaldetails/${encodedEmail}`);
+
         if (response.ok) {
           const data = await response.json();
-          if (data) {
-            // Update state with fetched data
-            setFormData(data);
-          }
+          setFormData({
+            firstName: data.firstName || '',
+            birthday: data.birthday || '',
+            gender: data.gender || '',
+            height: data.height || '',
+            interests: data.interests || [],
+          });
         } else {
           console.error('Failed to fetch additional details');
         }
@@ -49,7 +55,7 @@ const AdditionalDetails = () => {
   const handleInterestClick = (interest) => {
     const { interests } = formData;
     if (interests.includes(interest)) {
-      setFormData({ ...formData, interests: interests.filter(i => i !== interest) });
+      setFormData({ ...formData, interests: interests.filter((i) => i !== interest) });
     } else if (interests.length < 5) {
       setFormData({ ...formData, interests: [...interests, interest] });
     }
@@ -61,20 +67,18 @@ const AdditionalDetails = () => {
     try {
       const response = await fetch('http://localhost:3000/api/auth/additionaldetails', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
           email: currentUser.email,
         }),
       });
+
       if (response.ok) {
         const data = await response.json();
-        dispatch(updateDetails(data)); // Update the Redux state
-        // Reset form data if you want to allow resubmission later
-        dispatch(resetDetails()); // Reset submitted flag
-        navigate('/home');
+        dispatch(updateDetails(data));
+        dispatch(resetDetails());
+        navigate('/additionaldetails2');
       } else {
         console.error('Failed to submit additional details');
       }
@@ -83,7 +87,6 @@ const AdditionalDetails = () => {
     }
   };
 
-  // If already submitted, show a message instead of the form
   if (isSubmitted) {
     return <div>Your details have already been submitted.</div>;
   }
@@ -97,7 +100,7 @@ const AdditionalDetails = () => {
           <input
             type="text"
             name="firstName"
-            value={formData.firstName}
+            value={formData.firstName || ''}
             onChange={handleChange}
             required
             className="border p-2 w-full"
@@ -108,7 +111,7 @@ const AdditionalDetails = () => {
           <input
             type="date"
             name="birthday"
-            value={formData.birthday}
+            value={formData.birthday || ''}
             onChange={handleChange}
             required
             className="border p-2 w-full"
@@ -118,7 +121,7 @@ const AdditionalDetails = () => {
           <label className="block mb-1">Gender</label>
           <select
             name="gender"
-            value={formData.gender}
+            value={formData.gender || ''}
             onChange={handleChange}
             required
             className="border p-2 w-full"
@@ -134,7 +137,7 @@ const AdditionalDetails = () => {
           <input
             type="number"
             name="height"
-            value={formData.height}
+            value={formData.height || ''}
             onChange={handleChange}
             required
             className="border p-2 w-full"
@@ -147,7 +150,9 @@ const AdditionalDetails = () => {
               <button
                 key={interest}
                 type="button"
-                className={`p-2 border rounded ${formData.interests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
+                className={`p-2 border rounded ${
+                  formData.interests.includes(interest) ? 'bg-blue-500 text-white' : 'bg-white text-black'
+                }`}
                 onClick={() => handleInterestClick(interest)}
               >
                 {interest}
@@ -155,7 +160,6 @@ const AdditionalDetails = () => {
             ))}
           </div>
         </div>
-
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
           Submit
         </button>
