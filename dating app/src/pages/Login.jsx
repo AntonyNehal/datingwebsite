@@ -35,6 +35,7 @@ export default function Login() {
       if (!res.ok || data.success === false) {
         dispatch(signInFailure(data.message));
       } else {
+        localStorage.setItem('token', data.token);
         dispatch(signInSuccess(data));
         navigate('/home'); // Navigate to Home after successful login
       }

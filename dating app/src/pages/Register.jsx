@@ -39,6 +39,7 @@ const Register = () => {
       }
       console.log('Registration successful:', data);
       if(res.ok){
+        localStorage.setItem('token', data.token);
       dispatch(signInSuccess(data));
       navigate('/additionaldetails');
       }
