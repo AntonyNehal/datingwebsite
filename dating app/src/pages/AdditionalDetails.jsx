@@ -232,7 +232,7 @@ const AdditionalDetails = () => {
         <div className="mt-4">
           <h3 className="text-xl font-bold mb-2">Who Would You Like to Interact With?</h3>
           <div className="flex space-x-8">
-            {['boy', 'girl', 'both'].map((value) => (
+            {['male', 'female', 'both'].map((value) => (
               <label key={value} className="flex items-center space-x-3 text-lg font-medium">
                 <input
                   type="radio"

@@ -71,59 +71,6 @@ export const updateUser = async (req, res, next) => {
 };
 
 
-// export const updateAdditionalDetails = async (req, res) => {
-//   const { userId } = req.params;
-//   const { profilePicture, preference } = req.body; // Extract image URL and preference
-
-//   try {
-//       // Find user by ID and update their details
-//       const user = await User.findById(userId);
-
-//       if (!user) {
-//           return res.status(404).json({ message: 'User not found' });
-//       }
-
-//       // Update user details
-//       user.profilePicture = profilePicture; // Update the profile picture
-//       user.preference = preference; // Update user preference
-//       await user.save(); // Save changes to the database
-
-//       return res.status(200).json({ message: 'User details updated successfully', user });
-//   } catch (error) {
-//       console.error('Error updating user details:', error);
-//       return res.status(500).json({ message: 'Internal server error', error });
-//   }
-// };
-// user.controller.js
-// user.controller.js
-
-// Rename this function
-export const updateAdditionalDetails = async (req, res) => {
-  const userId = req.params.id; // Get user ID from URL parameters
-  const { image, preference } = req.body; // Extract image and preference from the request body
-
-  console.log('Received data:', { image, preference }); // Log received data
-
-  try {
-      const updatedUser = await User.findByIdAndUpdate(
-          userId,
-          { image, preference }, // Update the image and preference fields
-          { new: true, runValidators: true } // Return the updated document and run validation
-      );
-
-      if (!updatedUser) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-
-      res.json(updatedUser); // Return the updated user data
-  } catch (error) {
-      console.error('Error updating user:', error); // Log the error for debugging
-      res.status(500).json({ message: 'Server error', error: error.message }); // Return a server error message
-  }
-};
-
-
-
 export const getUserByEmail = async (req, res) => {
   const email = req.params.email;
 
@@ -159,3 +106,92 @@ export const signout=(req,res,next)=>{
     next(error);
   }
 }
+// export const userpreference = async (req, res, next) => {
+//   try {
+//     const { preference } = req.params;
+//     console.log(`Received request with preference: ${preference}`); // Log preference
+
+//     const genderFilter = preference === 'both' ? {} : { gender: preference };
+//     const users = await User.find(genderFilter).select('-password');
+
+//     if (users.length === 0) {
+//       return res.status(404).json({ message: 'No users found.' }); // Return JSON error
+//     }
+
+//     res.status(200).json(users); // Send users as JSON
+//   } catch (error) {
+//     console.error('Error fetching users:', error.message);
+//     res.status(500).json({ message: 'Server error.', error: error.message });
+//   }
+// };
+
+// export const userpreference = async (req, res, next) => {
+//   try {
+//       const { preference } = req.params;
+//       console.log('Preference:', req.params.preference);
+
+//       // Determine gender filter based on preference
+//       const genderFilter = preference === 'both' ? {} : { gender: preference };
+
+//       // Fetch users based on the filter, excluding their passwords
+//       const users = await User.find(genderFilter).select('-password');
+
+//       res.status(200).json(users);
+//   } catch (error) {
+//       res.status(500).json({ message: 'Server error.', error: error.message });
+//   }
+// };
+
+// export const friendRequest = async (req, res, next) => {
+//   const { senderId, receiverId } = req.body;
+//   try {
+//       const receiver = await User.findById(receiverId);
+//       if (!receiver) return res.status(404).json({ message: 'User not found.' });
+
+//       receiver.friendRequests.push(senderId); // Store sender's ID in receiver's friendRequests
+//       await receiver.save();
+
+//       res.status(200).json({ message: 'Friend request sent.' });
+//   } catch (error) {
+//       res.status(500).json({ message: 'Server error.', error: error.message });
+//   }
+// };
+
+// // Route to accept a friend request
+// export const acceptfriendRequest = async (req, res, next) => {
+//   const { senderId, receiverId } = req.body;
+//   try {
+//       const sender = await User.findById(senderId);
+//       const receiver = await User.findById(receiverId);
+
+//       if (!sender || !receiver) return res.status(404).json({ message: 'User not found.' });
+
+//       // Add each other as friends
+//       sender.friends.push(receiverId);
+//       receiver.friends.push(senderId);
+
+//       // Remove the friend request
+//       receiver.friendRequests = receiver.friendRequests.filter((id) => id !== senderId);
+      
+//       await sender.save();
+//       await receiver.save();
+
+//       res.status(200).json({ message: 'Friend request accepted.' });
+//   } catch (error) {
+//       res.status(500).json({ message: 'Server error.', error: error.message });
+//   }
+// };
+
+export const getUsersByPreference = async (req, res) => {
+  try {
+    const { preference } = req.params; // Get the preference from the request params
+
+    // Find users matching the preference
+    const users = await User.find({ gender: preference });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
