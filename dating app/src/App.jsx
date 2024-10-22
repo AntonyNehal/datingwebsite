@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar.jsx';
 import About from './pages/About.jsx';
 import Matches from './pages/Matches';
 import Messages from './pages/Messages';
@@ -16,33 +15,40 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'flowbite/dist/flowbite.css';
 import Dashboard from './pages/Dashboard.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
+import SearchBar from './components/Search.jsx';
 
 function App() {
   return (
-    <div>
     <Router>
-    <Header/>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<About />} />
-          <Route path="/matches" element={<Matches />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/navbar" element={<Navbar />} />
-          <Route path="/home" element={<Home/>} />
-          <Route path="/hobbies" element={<Hobbies/>} />
-          <Route element={<PrivateRoute/>}>
-          <Route path="/dashboard" element={<Dashboard/>} />
-          </Route>
-          
-          <Route path="/additionaldetails" element={<AdditionalDetails/>} />
+      <div className="flex flex-col min-h-screen"> {/* Flex container for full height */}
+        <Header />
+        {/* <Navbar /> Navbar stays at the top */}
 
-        </Routes>
+        <div className="flex flex-grow"> {/* Main content area with sidebar and search */}
+       
+
+          <div className="flex-grow p-4"> {/* Main content area where routes will be rendered */}
+            <Routes>
+              <Route path="/" element={<About />} />
+              <Route path="/matches" element={<Matches />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/hobbies" element={<Hobbies />} />
+              <Route path="/additionaldetails" element={<AdditionalDetails />} />
+              
+              <Route element={<PrivateRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/search" element={<SearchBar />} />
+              </Route>
+            </Routes>
+          </div>
+        </div>
+
+        <FooterCom /> {/* Footer at the bottom */}
       </div>
-      <FooterCom/>
     </Router>
-    </div>
   );
 }
 

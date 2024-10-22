@@ -269,3 +269,45 @@ export const chat = async (req, res) =>{
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+// Search Endpoint
+// Search Endpoint
+export const search = async (req, res) => {
+  const { username, interest, gender, birthday, height } = req.body;
+
+  // Build query object based on provided search parameters
+  const query = {};
+
+  if (username) query.username = { $regex: username, $options: 'i' }; // Case-insensitive search
+  if (interest) query.interests = { $in: [interest] }; // Match any interest in the array
+  if (gender) query.gender = gender;
+
+  // Handle age search from birthday
+  if (birthday) {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // If the birthday hasn't occurred this year yet, subtract 1 from the age
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    query.birthday = { $gte: new Date(today.getFullYear() - age - 1, today.getMonth(), today.getDate()), $lte: new Date(today.getFullYear() - age, today.getMonth(), today.getDate()) };
+  }
+
+  // Handle height search
+  if (height) {
+    query.height = Number(height); // Exact height match
+  }
+
+  try {
+    const users = await User.find(query);
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

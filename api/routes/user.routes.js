@@ -1,5 +1,5 @@
 import express from 'express';
-import { acceptFriendRequest, chat, deleteUser, getFriendRequests, getUserByEmail, getUsersByPreference, sendFriendRequest, signout, test, updateUser} from '../controllers/user.controller.js';
+import { acceptFriendRequest, chat, deleteUser, getFriendRequests, getUserByEmail, getUsersByPreference, search, sendFriendRequest, signout, test, updateUser} from '../controllers/user.controller.js';
 const router=express.Router();
 
 // Define the upload route
@@ -23,4 +23,5 @@ router.get('/:userId/requests', getFriendRequests);
 router.post('/send-request', sendFriendRequest);
 router.post('/accept-request', acceptFriendRequest);
 router.get('/:userId/friends',chat);
+router.post('/search',search);
 export default router;
