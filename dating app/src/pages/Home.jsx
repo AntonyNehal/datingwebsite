@@ -33,7 +33,21 @@ const Home = () => {
     // Move to the next profile, wrapping around to the start if at the end
     setCurrentIndex((prevIndex) => (prevIndex + 1) % profiles.length);
   };
-
+  const handleSendRequest = async (receiverId) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/user/send-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senderId: currentUser._id, receiverId }),
+      });
+  
+      const result = await response.json();
+      alert(result.message); // Notify user request is sent
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
+  };
+  
   if (loading) return <p>Loading profiles...</p>;
   if (profiles.length === 0) return <p>No profiles available.</p>;
 
@@ -53,9 +67,16 @@ const Home = () => {
         onClick={handleNextProfile} 
         className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
       >
-        Next Profile
+        Ignore
       </button>
+      <button 
+      onClick={() => handleSendRequest(currentProfile._id)} 
+      className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
+    >
+      Interested
+    </button>
     </div>
+  
   );
 };
 

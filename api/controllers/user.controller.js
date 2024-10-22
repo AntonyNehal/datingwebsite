@@ -195,3 +195,77 @@ export const getUsersByPreference = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+export const sendFriendRequest = async (req, res) => {
+  const { senderId, receiverId } = req.body;
+
+  try {
+    const receiver = await User.findById(receiverId);
+    if (!receiver) return res.status(404).json({ message: 'User not found' });
+
+    // Add the sender's ID to the receiver's friendRequests array
+    if (!receiver.friendRequests.includes(senderId)) {
+      receiver.friendRequests.push(senderId);
+      await receiver.save();
+    }
+
+    res.status(200).json({ message: 'Friend request sent!' });
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Accept Friend Request
+export const acceptFriendRequest = async (req, res) => {
+  const { receiverId, senderId } = req.body;
+
+  try {
+    const receiver = await User.findById(receiverId);
+    const sender = await User.findById(senderId);
+
+    if (!receiver || !sender) return res.status(404).json({ message: 'User not found' });
+
+    // Add each other to friends list
+    receiver.friends.push(senderId);
+    sender.friends.push(receiverId);
+
+    // Remove the friend request from receiver's list
+    receiver.friendRequests = receiver.friendRequests.filter(reqId => reqId.toString() !== senderId);
+    
+    await receiver.save();
+    await sender.save();
+
+    res.status(200).json({ message: 'Friend request accepted!' });
+  } catch (error) {
+    console.error('Error accepting friend request:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getFriendRequests = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate('friendRequests', 'firstName profilePicture'); 
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user.friendRequests);
+  } catch (error) {
+    console.error('Error fetching friend requests:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Backend Route
+export const chat = async (req, res) =>{
+  try {
+    const user = await User.findById(req.params.userId).populate('friends', 'firstName profilePicture');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user.friends);
+  } catch (error) {
+    console.error('Error fetching friends:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

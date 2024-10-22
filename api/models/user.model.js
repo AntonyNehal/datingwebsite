@@ -41,6 +41,8 @@ const userSchema=new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Friend requests
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Friends list
 },
 {timestamps:true}
 );
