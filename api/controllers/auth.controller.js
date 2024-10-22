@@ -33,7 +33,7 @@ export const register = async (req, res, next) => {
 };
 
 //login
-// 
+// // 
 export const login = async (req, res, next) => {
   const { username, password } = req.body;
   
@@ -75,41 +75,126 @@ export const login = async (req, res, next) => {
   }
 };
 
-//google auth
-// Google Auth
+// //google auth
+// // Google Auth
+// export const google = async (req, res, next) => {
+//   const { email, name, googlePhotoUrl } = req.body;
+//   try {
+//     const user = await User.findOne({ email });
+//     if (user) {
+//       const token = jwt.sign({ id: user._id }, 'secretkey');
+//       const { password, ...rest } = user._doc;
+//       // Return response for existing user
+//       res.status(200).cookie('access_token', token, {
+//         httpOnly: true,
+//       }).json({ isNewUser: false, ...rest }); // Indicate existing user
+//     } else {
+//       const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+//       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+//       const newUser = new User({
+//         username: name.toLowerCase().split(' ').join(' ') + Math.random().toString(9).slice(-4),
+//         email,
+//         password: hashedPassword,
+//         profilePicture: googlePhotoUrl,
+//       });
+//       await newUser.save();
+//       const token = jwt.sign({ id: newUser._id }, 'secretkey');
+//       const { password, ...rest } = newUser._doc;
+//       // Return response for new user
+//       res.status(200).cookie('access_token', token, {
+//         httpOnly: true,
+//       }).json({ isNewUser: true, ...rest }); // Indicate new user
+//     }
+//   } catch (error) {
+//     console.error('Error in Google Auth:', error);
+//     next(error);
+//   }
+// };
+// export const login = async (req, res, next) => {
+//   const { username, password } = req.body;
+
+//   // Check if both fields are provided
+//   if (!username || !password) {
+//     return next({ status: 400, message: 'All fields are required' });
+//   }
+
+//   try {
+//     const validUser = await User.findOne({ username });
+//     if (!validUser) {
+//       return next({ status: 404, message: 'User not found' });
+//     }
+
+//     const validPassword = bcryptjs.compareSync(password, validUser.password);
+//     if (!validPassword) {
+//       return next({ status: 400, message: 'Invalid username or password' });
+//     }
+
+//     // Generate JWT with user ID, email, and isAdmin
+//     const token = jwt.sign(
+//       { id: validUser._id, email: validUser.email, isAdmin: validUser.isAdmin },
+//       'secretkey',
+//       { expiresIn: '1h' }
+//     );
+
+//     const { password, ...userData } = validUser._doc;
+
+//     // Send response with token and user data
+//     res.status(200)
+//       .cookie('access_token', token, { httpOnly: true })
+//       .json({ ...userData });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 export const google = async (req, res, next) => {
   const { email, name, googlePhotoUrl } = req.body;
+
   try {
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
+
     if (user) {
-      const token = jwt.sign({ id: user._id }, 'secretkey');
-      const { password, ...rest } = user._doc;
-      // Return response for existing user
-      res.status(200).cookie('access_token', token, {
-        httpOnly: true,
-      }).json({ isNewUser: false, ...rest }); // Indicate existing user
+      // Generate JWT with user ID, email, and isAdmin
+      const token = jwt.sign(
+        { id: user._id, email: user.email, isAdmin: user.isAdmin },
+        'secretkey',
+        { expiresIn: '1h' }
+      );
+
+      const { password, ...userData } = user._doc;
+      return res.status(200).cookie('access_token', token, { httpOnly: true })
+        .json({ isNewUser: false, ...userData });
     } else {
+      // Generate random password for new users
       const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
       const newUser = new User({
-        username: name.toLowerCase().split(' ').join(' ') + Math.random().toString(9).slice(-4),
+        username: name.toLowerCase().replace(/\s+/g, '') + Math.random().toString(9).slice(-4),
         email,
         password: hashedPassword,
         profilePicture: googlePhotoUrl,
+        isAdmin: false, // New users are not admins by default
       });
+
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, 'secretkey');
-      const { password, ...rest } = newUser._doc;
-      // Return response for new user
-      res.status(200).cookie('access_token', token, {
-        httpOnly: true,
-      }).json({ isNewUser: true, ...rest }); // Indicate new user
+
+      // Generate JWT for new user
+      const token = jwt.sign(
+        { id: newUser._id, email: newUser.email, isAdmin: newUser.isAdmin },
+        'secretkey',
+        { expiresIn: '1h' }
+      );
+
+      const { password, ...userData } = newUser._doc;
+      res.status(200).cookie('access_token', token, { httpOnly: true })
+        .json({ isNewUser: true, ...userData });
     }
   } catch (error) {
     console.error('Error in Google Auth:', error);
     next(error);
   }
 };
+
 //additionaldetails
 export const additionalDetailsByEmail = async (req, res) => {
   try {
@@ -127,29 +212,6 @@ export const additionalDetailsByEmail = async (req, res) => {
   }
 };
 
-// Update user details
-// export const additionalDetails = async (req, res) => {
-//   try {
-//     const { email, firstName, birthday, gender, height, interests } = req.body;
-
-//     const updatedUser = await User.findOneAndUpdate(
-//       { email }, // Find user by email
-//       { firstName, birthday, gender, height, interests }, // Update user details
-//       { new: true } // Return the updated document
-//     );
-
-//     if (!updatedUser) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     res.status(200).json(updatedUser); // Return updated user details
-//   } catch (error) {
-//     console.error('Error updating user:', error);
-//     res.status(500).json({ message: 'Server Error' });
-//   }
-// };
-
-// Update user details
 export const additionalDetails = async (req, res) => {
   try {
     const { email, firstName, birthday, gender, height, interests, image, preference } = req.body;

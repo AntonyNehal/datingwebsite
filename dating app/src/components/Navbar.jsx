@@ -10,7 +10,7 @@ const Navbar = () => {
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
-  
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
   const [hasNewRequests, setHasNewRequests] = useState(false);
@@ -40,7 +40,7 @@ const Navbar = () => {
   }, [currentUser]);
 
   const fetchFriendRequests = async () => {
-    setLoadingRequests(true); // Set loading state
+    setLoadingRequests(true);
     try {
       const response = await fetch(`http://localhost:3000/api/user/${currentUser._id}/requests`);
       const data = await response.json();
@@ -49,7 +49,7 @@ const Navbar = () => {
     } catch (error) {
       console.error('Error fetching friend requests:', error);
     } finally {
-      setLoadingRequests(false); // Reset loading state
+      setLoadingRequests(false);
     }
   };
 
@@ -87,14 +87,12 @@ const Navbar = () => {
         </div>
 
         <div className="ml-auto flex space-x-4 items-center">
-          {/* Search Icon */}
           {currentUser && (
             <Link to="/search">
               <FaSearch size={24} className="text-gray-500 hover:text-indigo-500 transition" aria-label="Search" />
             </Link>
           )}
 
-          {/* Theme Toggle */}
           <Button
             className="w-12 h-10"
             color="gray"
@@ -105,7 +103,6 @@ const Navbar = () => {
             {theme === 'light' ? <FaSun /> : <FaMoon />}
           </Button>
 
-          {/* Notification Bell */}
           {currentUser && (
             <Dropdown
               arrowIcon={false}
@@ -119,15 +116,18 @@ const Navbar = () => {
                 </div>
               }
             >
-              <Dropdown.Header>
+              <Dropdown.Header className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}>
                 <span className="font-bold">Friend Requests</span>
               </Dropdown.Header>
+
               {loadingRequests ? (
-                <Dropdown.Item>Loading...</Dropdown.Item>
+                <Dropdown.Item className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}>
+                  Loading...
+                </Dropdown.Item>
               ) : (
                 friendRequests.length > 0 ? (
                   friendRequests.map((req) => (
-                    <Dropdown.Item key={req._id}>
+                    <Dropdown.Item key={req._id} className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}>
                       <div className="flex justify-between items-center">
                         <span>{req.firstName} sent you a request.</span>
                         <Button size="xs" color="green" onClick={() => handleAcceptRequest(req._id)}>
@@ -137,13 +137,14 @@ const Navbar = () => {
                     </Dropdown.Item>
                   ))
                 ) : (
-                  <Dropdown.Item>No new requests</Dropdown.Item>
+                  <Dropdown.Item className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}>
+                    No new requests
+                  </Dropdown.Item>
                 )
               )}
             </Dropdown>
           )}
 
-          {/* User Links */}
           {currentUser ? (
             <>
               <Link to="/home" className={`hover:${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`}>
@@ -156,16 +157,27 @@ const Navbar = () => {
                 arrowIcon={false}
                 inline
                 label={<Avatar alt="user" img={currentUser.profilePicture} rounded />}
+                className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}
               >
-                <Dropdown.Header>
+                <Dropdown.Header className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}>
                   <span className="block text-sm">@{currentUser.username}</span>
                   <span className="block text-sm font-medium truncate">{currentUser.email}</span>
                 </Dropdown.Header>
-                <Dropdown.Item as={Link} to="/dashboard?tab=profile" onClick={closeSidebar}>
+                <Dropdown.Item
+                  as={Link}
+                  to="/dashboard?tab=profile"
+                  onClick={closeSidebar}
+                  className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}
+                >
                   Profile
                 </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
+                <Dropdown.Divider className={`${theme === 'light' ? 'bg-gray-300' : 'bg-gray-700'}`} />
+                <Dropdown.Item
+                  onClick={handleSignOut}
+                  className={`${theme === 'light' ? 'bg-white text-gray-900' : 'bg-gray-800 text-gray-200'}`}
+                >
+                  Sign Out
+                </Dropdown.Item>
               </Dropdown>
             </>
           ) : (
@@ -184,17 +196,11 @@ const Navbar = () => {
       {/* Sidebar */}
       {currentUser && (
         <Sidebar
-          className={`fixed top-0 left-0 h-full transition-transform duration-300 ease-in-out ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } ${theme === 'light' ? 'bg-white text-gray-800' : 'bg-gray-800 text-gray-200'}`}
+          className={`fixed top-0 left-0 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${theme === 'light' ? 'bg-white text-gray-800' : 'bg-gray-800 text-gray-200'}`}
         >
           <Sidebar.Items>
             <Sidebar.ItemGroup>
-              <div
-                className={`flex justify-between items-center p-4 ${
-                  theme === 'light' ? 'bg-gray-200' : 'bg-gray-900'
-                }`}
-              >
+              <div className={`flex justify-between items-center p-4 ${theme === 'light' ? 'bg-gray-200' : 'bg-gray-900'}`}>
                 <h2 className="text-lg font-semibold">Menu</h2>
                 <button onClick={closeSidebar} className="text-gray-500 hover:text-indigo-500" aria-label="Close sidebar">
                   <span className="text-2xl">✖</span>
