@@ -106,81 +106,7 @@ export const signout=(req,res,next)=>{
     next(error);
   }
 }
-// export const userpreference = async (req, res, next) => {
-//   try {
-//     const { preference } = req.params;
-//     console.log(`Received request with preference: ${preference}`); // Log preference
 
-//     const genderFilter = preference === 'both' ? {} : { gender: preference };
-//     const users = await User.find(genderFilter).select('-password');
-
-//     if (users.length === 0) {
-//       return res.status(404).json({ message: 'No users found.' }); // Return JSON error
-//     }
-
-//     res.status(200).json(users); // Send users as JSON
-//   } catch (error) {
-//     console.error('Error fetching users:', error.message);
-//     res.status(500).json({ message: 'Server error.', error: error.message });
-//   }
-// };
-
-// export const userpreference = async (req, res, next) => {
-//   try {
-//       const { preference } = req.params;
-//       console.log('Preference:', req.params.preference);
-
-//       // Determine gender filter based on preference
-//       const genderFilter = preference === 'both' ? {} : { gender: preference };
-
-//       // Fetch users based on the filter, excluding their passwords
-//       const users = await User.find(genderFilter).select('-password');
-
-//       res.status(200).json(users);
-//   } catch (error) {
-//       res.status(500).json({ message: 'Server error.', error: error.message });
-//   }
-// };
-
-// export const friendRequest = async (req, res, next) => {
-//   const { senderId, receiverId } = req.body;
-//   try {
-//       const receiver = await User.findById(receiverId);
-//       if (!receiver) return res.status(404).json({ message: 'User not found.' });
-
-//       receiver.friendRequests.push(senderId); // Store sender's ID in receiver's friendRequests
-//       await receiver.save();
-
-//       res.status(200).json({ message: 'Friend request sent.' });
-//   } catch (error) {
-//       res.status(500).json({ message: 'Server error.', error: error.message });
-//   }
-// };
-
-// // Route to accept a friend request
-// export const acceptfriendRequest = async (req, res, next) => {
-//   const { senderId, receiverId } = req.body;
-//   try {
-//       const sender = await User.findById(senderId);
-//       const receiver = await User.findById(receiverId);
-
-//       if (!sender || !receiver) return res.status(404).json({ message: 'User not found.' });
-
-//       // Add each other as friends
-//       sender.friends.push(receiverId);
-//       receiver.friends.push(senderId);
-
-//       // Remove the friend request
-//       receiver.friendRequests = receiver.friendRequests.filter((id) => id !== senderId);
-      
-//       await sender.save();
-//       await receiver.save();
-
-//       res.status(200).json({ message: 'Friend request accepted.' });
-//   } catch (error) {
-//       res.status(500).json({ message: 'Server error.', error: error.message });
-//   }
-// };
 
 export const getUsersByPreference = async (req, res) => {
   try {
@@ -274,67 +200,41 @@ export const chat = async (req, res) =>{
 // Search Endpoint
 // Search Endpoint
 export const search = async (req, res) => {
-  const { username, interest, gender, birthday, height } = req.body;
+  const { username, interest, minAge, maxAge, gender, minHeight, maxHeight } = req.body;
 
-  // Build query object based on provided search parameters
-  const query = {};
+  const filter = {};
 
-  if (username) query.username = { $regex: username, $options: 'i' }; // Case-insensitive search
-  if (interest) query.interests = { $in: [interest] }; // Match any interest in the array
-  if (gender) query.gender = gender;
+  if (username) filter.username = { $regex: username, $options: 'i' };
+  if (interest) filter.interests = interest;
+  if (gender) filter.gender = gender;
 
-  // Handle age search from birthday
-  if (birthday) {
-    const today = new Date();
-    const birthDate = new Date(birthday);
-    const age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    // If the birthday hasn't occurred this year yet, subtract 1 from the age
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    query.birthday = { $gte: new Date(today.getFullYear() - age - 1, today.getMonth(), today.getDate()), $lte: new Date(today.getFullYear() - age, today.getMonth(), today.getDate()) };
+  // Height range filter
+  if (minHeight || maxHeight) {
+    filter.height = {};
+    if (minHeight) filter.height.$gte = parseInt(minHeight, 10);
+    if (maxHeight) filter.height.$lte = parseInt(maxHeight, 10);
   }
 
-  // Handle height search
-  if (height) {
-    query.height = Number(height); // Exact height match
+  // Age range filter
+  if (minAge || maxAge) {
+    const currentYear = new Date().getFullYear();
+    const minYear = minAge ? currentYear - minAge : null;
+    const maxYear = maxAge ? currentYear - maxAge : null;
+
+    filter.birthday = {};
+    if (minYear) filter.birthday.$lte = new Date(`${minYear}-01-01`);
+    if (maxYear) filter.birthday.$gte = new Date(`${maxYear}-12-31`);
   }
 
   try {
-    const users = await User.find(query);
+    const users = await User.find(filter);
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error(error);
+    res.status(500).send('Server Error');
   }
 };
 
-
-// Get all users for admin panel
-// export const noofusers = async (req, res) => {
-//   try {
-//       const users = await User.find();
-//       res.json(users);
-//   } catch (error) {
-//       console.error('Error fetching users:', error);
-//       res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// // Delete a user
-// export const deleteusers = async (req, res) =>{
-//   try {
-//       const userId = req.params.id;
-//       await User.findByIdAndDelete(userId);
-//       res.json({ message: 'User deleted successfully' });
-//   } catch (error) {
-//       console.error('Error deleting user:', error);
-//       res.status(500).json({ message: 'Server error' });
-//   }
-// };
 
 // Fetch all users
 export const noofusers = async (req, res) => {

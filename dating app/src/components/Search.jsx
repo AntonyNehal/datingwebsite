@@ -11,9 +11,11 @@ const SearchPage = () => {
   const [query, setQuery] = useState({
     username: '',
     interest: '',
-    birthday: '',
+    minAge: '',
+    maxAge: '',
     gender: '',
-    height: '',
+    minHeight: '',
+    maxHeight: '',
   });
   const [results, setResults] = useState([]);
 
@@ -24,7 +26,6 @@ const SearchPage = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    // Optional: Add validation here
     try {
       const response = await fetch(`http://localhost:3000/api/user/search`, {
         method: 'POST',
@@ -49,9 +50,9 @@ const SearchPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ senderId: currentUser._id, receiverId }),
       });
-  
+
       const result = await response.json();
-      alert(result.message); // Notify user request is sent
+      alert(result.message);
     } catch (error) {
       console.error('Error sending friend request:', error);
     }
@@ -59,7 +60,6 @@ const SearchPage = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Left Side - Search Form */}
       <div className="w-1/3 p-4 bg-gray-100 dark:bg-gray-800">
         <form onSubmit={handleSearch} className="space-y-4">
           <input
@@ -94,16 +94,33 @@ const SearchPage = () => {
           </select>
 
           <input
-            type="date" // Use date input for birthday
-            name="birthday"
+            type="number"
+            name="minAge"
+            placeholder="Min Age"
             onChange={handleChange}
             className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
 
           <input
             type="number"
-            name="height"
-            placeholder="Height (cm)"
+            name="maxAge"
+            placeholder="Max Age"
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white"
+          />
+
+          <input
+            type="number"
+            name="minHeight"
+            placeholder="Min Height (cm)"
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white"
+          />
+
+          <input
+            type="number"
+            name="maxHeight"
+            placeholder="Max Height (cm)"
             onChange={handleChange}
             className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white"
           />
@@ -117,7 +134,6 @@ const SearchPage = () => {
         </form>
       </div>
 
-      {/* Right Side - Search Results */}
       <div className="w-2/3 p-4 overflow-auto">
         {results.length > 0 ? (
           results.map((user) => (
