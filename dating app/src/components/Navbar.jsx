@@ -150,9 +150,14 @@ const Navbar = () => {
               <Link to="/home" className={`hover:${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`}>
                 Home
               </Link>
-              <Link to="/messages" className={`hover:${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`}>
+              {/* <Link to="/messages" className={`hover:${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`}>
                 Messages
-              </Link>
+              </Link> */}
+                 {!currentUser.isAdmin && (
+      <Link to="/messages" className={`hover:${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`}>
+        Messages
+      </Link>
+    )}
               <Dropdown
                 arrowIcon={false}
                 inline
@@ -213,9 +218,14 @@ const Navbar = () => {
               <Sidebar.Item as={Link} to="/home" onClick={closeSidebar}>
                 Home
               </Sidebar.Item>
-              <Sidebar.Item as={Link} to="/messages" onClick={closeSidebar}>
+              {/* <Sidebar.Item as={Link} to="/messages" onClick={closeSidebar}>
                 Messages
-              </Sidebar.Item>
+              </Sidebar.Item> */}
+               {!currentUser.isAdmin && (
+          <Sidebar.Item as={Link} to="/messages" onClick={closeSidebar}>
+            Messages
+          </Sidebar.Item>
+        )}
               <Sidebar.Item onClick={handleSignOut}>Sign Out</Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>

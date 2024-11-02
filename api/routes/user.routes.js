@@ -1,5 +1,5 @@
 import express from 'express';
-import { acceptFriendRequest, chat, deleteUser, deleteusers, getFriendRequests, getUserByEmail, getUsersByPreference, noofusers, search, sendFriendRequest, signout, test, updateUser} from '../controllers/user.controller.js';
+import { acceptFriendRequest, chat, deleteUser, deleteusers, getFriendRequests, getUserByEmail, getUsersByPreference, noofusers, search, sendFriendRequest, signout, test, totalusers, updateUser} from '../controllers/user.controller.js';
 const router=express.Router();
 
 
@@ -18,6 +18,8 @@ router.post('/accept-request', acceptFriendRequest);
 router.get('/:userId/friends',chat);
 router.post('/search',search);
 
-router.post('/all', noofusers); 
+// router.post('/all', noofusers); 
 router.delete('/delete/:id', deleteusers);
+
+router.post('/all', totalusers); 
 export default router;

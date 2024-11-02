@@ -1,82 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
-const AdminPanel = () => {
-  const [users, setUsers] = useState([]);
-  const [userCount, setUserCount] = useState(0);
-
-  // Fetch all users on mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/user/all', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch users');
-        }
-
-        const data = await response.json();
-        setUsers(data);
-        setUserCount(data.length);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Handle user deletion
-  const handleDeleteUser = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/user/delete/${userId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        alert('User deleted successfully!');
-        setUsers(users.filter((user) => user._id !== userId));
-      } else {
-        alert('Failed to delete user.');
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
-  };
-
-  return (
-    <div className="container mx-auto p-8">
-      <h2 className="text-3xl font-extrabold mb-6 text-center">Admin Panel</h2>
-      <p className="text-lg font-medium mb-8 text-center">
-        Total Users: <span className="font-bold text-blue-600">{userCount}</span>
-      </p>
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user) => (
-          <li
-            key={user._id}
-            className="p-6 border rounded-lg shadow-lg flex justify-between items-center hover:bg-gray-100 transition duration-200"
-          >
-            <div>
-              <h3 className="text-xl font-semibold">{user.username}</h3>
-              <p className="text-sm text-gray-600">{user.email}</p>
-            </div>
-            <button
-              onClick={() => handleDeleteUser(user._id)}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200"
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
+import AdminPanel from './AdminPanel';
 
 const Home = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -186,4 +110,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;
